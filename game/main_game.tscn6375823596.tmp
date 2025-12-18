@@ -1,0 +1,168 @@
+[gd_scene load_steps=11 format=3 uid="uid://coftb53vo22jc"]
+
+[ext_resource type="Script" uid="uid://dwh02icc2icvt" path="res://game/main_game.gd" id="1_8b6m4"]
+[ext_resource type="PackedScene" uid="uid://c7u8hryloq7hy" path="res://addons/card-framework/card_manager.tscn" id="2_f5y4x"]
+[ext_resource type="PackedScene" uid="uid://diap3gdfbqvjv" path="res://example1/my_card_factory.tscn" id="3_pp1d7"]
+[ext_resource type="PackedScene" uid="uid://dk6rb7lhv1ef6" path="res://addons/card-framework/pile.tscn" id="4_3ce54"]
+[ext_resource type="PackedScene" uid="uid://bkpjlq7ggckg6" path="res://addons/card-framework/hand.tscn" id="9_kqp58"]
+[ext_resource type="Texture2D" uid="uid://bdf2cukmms3nb" path="res://example1/assets/images/cards/cardBack_red3.png" id="10_g56ji"]
+
+[sub_resource type="Curve" id="Curve_6o72v"]
+_limits = [-15.0, 15.0, 0.0, 1.0]
+_data = [Vector2(0, -15), 0.0, 0.0, 0, 0, Vector2(1, 15), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_v3atx"]
+_limits = [0.0, 50.0, 0.0, 1.0]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_xheak"]
+_limits = [-15.0, 15.0, 0.0, 1.0]
+
+[sub_resource type="Curve" id="Curve_pdiy6"]
+_limits = [0.0, 50.0, 0.0, 1.0]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[node name="MainGame" type="Node"]
+script = ExtResource("1_8b6m4")
+
+[node name="ButtonContainer" type="HBoxContainer" parent="."]
+offset_left = 100.0
+offset_top = 100.0
+offset_right = 200.0
+offset_bottom = 140.0
+
+[node name="ButtonColumnContainer1" type="VBoxContainer" parent="ButtonContainer"]
+layout_mode = 2
+
+[node name="Draw1Button" type="Button" parent="ButtonContainer/ButtonColumnContainer1"]
+layout_mode = 2
+text = "draw 1"
+
+[node name="DrawHandButton" type="Button" parent="ButtonContainer/ButtonColumnContainer1"]
+layout_mode = 2
+text = "draw hand"
+
+[node name="ResetDeckButton" type="Button" parent="ButtonContainer/ButtonColumnContainer1"]
+layout_mode = 2
+text = "reset deck"
+
+[node name="UndoButton" type="Button" parent="ButtonContainer/ButtonColumnContainer1"]
+layout_mode = 2
+text = "undo"
+
+[node name="ShuffleHandButton" type="Button" parent="ButtonContainer/ButtonColumnContainer1"]
+layout_mode = 2
+text = "shuffle hand"
+
+[node name="ClearAllButton" type="Button" parent="ButtonContainer/ButtonColumnContainer1"]
+layout_mode = 2
+text = "clear all"
+
+[node name="ButtonColumnContainer2" type="VBoxContainer" parent="ButtonContainer"]
+layout_mode = 2
+
+[node name="DealBoardButton" type="Button" parent="ButtonContainer/ButtonColumnContainer2"]
+layout_mode = 2
+text = "deal board"
+
+[node name="FlopButton" type="Button" parent="ButtonContainer/ButtonColumnContainer2"]
+layout_mode = 2
+text = "\"the flop\""
+
+[node name="TurnButton" type="Button" parent="ButtonContainer/ButtonColumnContainer2"]
+layout_mode = 2
+text = "\"the turn\""
+
+[node name="RiverButton" type="Button" parent="ButtonContainer/ButtonColumnContainer2"]
+layout_mode = 2
+text = "\"the river\""
+
+[node name="RevealAllButton" type="Button" parent="ButtonContainer/ButtonColumnContainer2"]
+layout_mode = 2
+text = "reveal all"
+
+[node name="EvaluateHandButton" type="Button" parent="ButtonContainer/ButtonColumnContainer2"]
+layout_mode = 2
+text = "evaluate hand"
+
+[node name="EvaluatePotentialHandButton" type="Button" parent="ButtonContainer/ButtonColumnContainer2"]
+layout_mode = 2
+text = "evaluate potential hand"
+
+[node name="CardManager" parent="." instance=ExtResource("2_f5y4x")]
+card_factory_scene = ExtResource("3_pp1d7")
+debug_mode = true
+
+[node name="Hand" parent="CardManager" instance=ExtResource("9_kqp58")]
+layout_mode = 0
+offset_left = 1000.0
+offset_top = 800.0
+offset_right = 1000.0
+offset_bottom = 800.0
+max_hand_size = 2
+hand_rotation_curve = SubResource("Curve_6o72v")
+hand_vertical_curve = SubResource("Curve_v3atx")
+
+[node name="Deck" parent="CardManager" instance=ExtResource("4_3ce54")]
+layout_mode = 0
+offset_left = 300.0
+offset_top = 800.0
+offset_right = 300.0
+offset_bottom = 800.0
+card_face_up = false
+sensor_texture = ExtResource("10_g56ji")
+
+[node name="Board" parent="CardManager" instance=ExtResource("9_kqp58")]
+layout_mode = 0
+offset_left = 676.0
+offset_top = 417.0
+offset_right = 676.0
+offset_bottom = 417.0
+max_hand_size = 5
+card_face_up = false
+hand_rotation_curve = SubResource("Curve_xheak")
+hand_vertical_curve = SubResource("Curve_pdiy6")
+
+[node name="HandLabel" type="Label" parent="."]
+offset_left = 1050.0
+offset_top = 700.0
+offset_right = 1092.0
+offset_bottom = 723.0
+text = "Hand"
+
+[node name="DeckLabel" type="Label" parent="."]
+offset_left = 355.0
+offset_top = 700.0
+offset_right = 395.0
+offset_bottom = 723.0
+text = "Deck"
+
+[node name="BoardLabel" type="Label" parent="."]
+offset_left = 724.0
+offset_top = 360.0
+offset_right = 771.0
+offset_bottom = 383.0
+text = "Board"
+
+[node name="HandOutcomeLabel" type="Label" parent="."]
+offset_left = 1409.0
+offset_top = 283.0
+offset_right = 2530.0
+offset_bottom = 351.0
+
+[connection signal="pressed" from="ButtonContainer/ButtonColumnContainer1/Draw1Button" to="." method="_on_draw_1_button_pressed"]
+[connection signal="pressed" from="ButtonContainer/ButtonColumnContainer1/DrawHandButton" to="." method="_on_draw_hand_button_pressed"]
+[connection signal="pressed" from="ButtonContainer/ButtonColumnContainer1/ResetDeckButton" to="." method="_on_reset_deck_button_pressed"]
+[connection signal="pressed" from="ButtonContainer/ButtonColumnContainer1/UndoButton" to="." method="_on_undo_button_pressed"]
+[connection signal="pressed" from="ButtonContainer/ButtonColumnContainer1/ShuffleHandButton" to="." method="_on_shuffle_hand_button_pressed"]
+[connection signal="pressed" from="ButtonContainer/ButtonColumnContainer1/ClearAllButton" to="." method="_on_clear_all_button_pressed"]
+[connection signal="pressed" from="ButtonContainer/ButtonColumnContainer2/DealBoardButton" to="." method="_on_deal_board_button_pressed"]
+[connection signal="pressed" from="ButtonContainer/ButtonColumnContainer2/FlopButton" to="." method="_on_flop_button_pressed"]
+[connection signal="pressed" from="ButtonContainer/ButtonColumnContainer2/TurnButton" to="." method="_on_turn_button_pressed"]
+[connection signal="pressed" from="ButtonContainer/ButtonColumnContainer2/RiverButton" to="." method="_on_river_button_pressed"]
+[connection signal="pressed" from="ButtonContainer/ButtonColumnContainer2/RevealAllButton" to="." method="_on_reveal_all_button_pressed"]
+[connection signal="pressed" from="ButtonContainer/ButtonColumnContainer2/EvaluateHandButton" to="." method="_on_evaluate_hand_button_pressed"]
+[connection signal="pressed" from="ButtonContainer/ButtonColumnContainer2/EvaluatePotentialHandButton" to="." method="_on_evaluate_potential_hand_button_pressed"]

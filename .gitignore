@@ -1,0 +1,26 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+.import/
+export.cfg
+export_presets.cfg
+.mono/
+data_*/
+mono_crash.*.json
+
+# Imported translations (automatically generated from CSV files)
+*.translation
+
+# Godot auto-generated files
+*.gen.*
+
+# Build/export folders
+builds/
+exports/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+card-framework-02c3877e9c63eb45bb1f9ba479eb3316c1b9c79c/
+example1/
