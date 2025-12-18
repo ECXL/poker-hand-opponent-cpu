@@ -5,7 +5,7 @@
 
 ## Description
 
-For a game I am currently developing, I have been creating a functional Poker game as a mechanic for it. This game requires a CPU for the opponent to play against as it is designed to be a single player game. I wanted to create a CPU that can evaluate what Poker Hand they have and realise the potential hands they could get, in order for it to place fold, check and place bets. With a bit of randomness, once functional it should be able to even bluff.
+For a **Godot** game I am currently developing, I have been creating a functional Poker game as a mechanic for it. This game requires a CPU for the opponent to play against as it is designed to be a single player game. I wanted to create a CPU that can evaluate what Poker Hand they have and realise the potential hands they could get, in order for it to place fold, check and place bets. With a bit of randomness, once functional it should be able to even bluff.
 
 This code prioritises gameplay feel over accuracy. This is not designed to be a perfect machine learning AI that can bet and bluff accurately, it is designed to feel good for the player to play up against. Despite it bluffing, it should not feel like random chance to beat this CPU, though there should still be that uncertainty that comes with Poker.
 
