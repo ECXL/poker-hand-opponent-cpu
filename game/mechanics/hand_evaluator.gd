@@ -251,9 +251,9 @@ func checkThreeOfAKind(rank_counts):
 	mainHand.append_array(three_of_a_kind_cards)
 	type = HandType.THREE_OF_A_KIND
 	
-	var kickers = cards.filter(func(card): return card.card_info["value"] != three_of_a_kind_rank[0])
-	kickers.sort_custom(func(a, b): return a.card_info["value"] > b.card_info["value"])
-	mainHand.append_array(kickers.slice(0, 2))
+	var potential_kickers = cards.filter(func(card): return card.card_info["value"] != three_of_a_kind_rank[0])
+	potential_kickers.sort_custom(func(a, b): return get_card_value(a) > get_card_value(b))
+	mainHand.append_array(potential_kickers.slice(0, 2))
 
 func checkTwoPair(rank_counts):
 	"""Builds two pair hand with top kicker."""
@@ -273,7 +273,7 @@ func checkTwoPair(rank_counts):
 		if card.card_info["value"] not in two_pair_ranks:
 			potential_kickers.append(card)
 			
-	potential_kickers.sort_custom(func(a, b): return a.card_info["value"] > b.card_info["value"])
+	potential_kickers.sort_custom(func(a, b): return get_card_value(a) > get_card_value(b))
 	
 	if potential_kickers:
 		mainHand.append(potential_kickers[0])
@@ -292,10 +292,9 @@ func checkPair(rank_counts):
 	
 	mainHand.append_array(single_pair_cards)
 	type = HandType.PAIR
-	var kickers = cards.filter(func(card): return card.card_info["value"] != pair_rank[0])
-	kickers.sort_custom(func(a, b): return a.card_info["value"] > b.card_info["value"])
-	kickers.reverse()
-	mainHand.append_array(kickers.slice(0, 3))
+	var potential_kickers = cards.filter(func(card): return card.card_info["value"] != pair_rank[0])
+	potential_kickers.sort_custom(func(a, b): return get_card_value(a) > get_card_value(b))
+	mainHand.append_array(potential_kickers.slice(0, 3))
 	
 func identifyPotentialHands(hand_cards: Array[Card]) -> void:
 	"""
@@ -631,7 +630,7 @@ func __eq__(hand_evaluator: Object) -> bool:
 
 func __gt__(hand_evaluator: Object) -> bool:
 	"""Greater-than comparison between two poker hands."""
-	var otherHandValue = hand_evaluator.getType().value
+	var otherHandValue = hand_evaluator.getType()
 	if type > otherHandValue: 
 		return true 
 	if type < otherHandValue:
