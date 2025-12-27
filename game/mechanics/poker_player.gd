@@ -10,7 +10,7 @@ func checkStayInPotential(hand_cards: Array[Card]):
 	var current_hand_value = hand_type_to_score()
 	var potential_value = identifyPotentialHands(hand_cards)
 	if street == "preflop":
-		potential_value += 50
+		potential_value += 30
 	
 	var hand_strength = calculate_hand_strength(current_hand_value, float(potential_value))
 	var pot_odds = calculate_pot_odds()

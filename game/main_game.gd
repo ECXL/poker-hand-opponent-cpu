@@ -23,7 +23,7 @@ var board_revealed: int = 0
 var street: String = "preflop"
 
 var player_money: int = 1000
-var cpu_money: int = 100
+var cpu_money: int = 1000
 var pot_money: int = 0
 var check_money: int = 0
 
@@ -235,6 +235,13 @@ func _on_clear_all_button_pressed():
 	cpu_hand.clear_cards()
 	board_revealed = 0
 	street = "preflop"
+	player_money = 1000
+	cpu_money = 1000
+	pot_money = 0
+	check_money = 0
+	update_check_money_label()
+	update_money_labels()
+	update_player_slider_max()
 	
 func update_money_labels():
 	player_money_label.text = str(player_money)
