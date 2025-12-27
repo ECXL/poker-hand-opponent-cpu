@@ -107,6 +107,10 @@ text = "evaluate potential CPU hand"
 layout_mode = 2
 text = "evaluate winner"
 
+[node name="EvaluateDecisionButton" type="Button" parent="ButtonContainer/ButtonColumnContainer3"]
+layout_mode = 2
+text = "evaluate decision"
+
 [node name="CardManager" parent="." instance=ExtResource("2_f5y4x")]
 card_factory_scene = ExtResource("3_pp1d7")
 debug_mode = true
@@ -203,6 +207,12 @@ offset_top = 58.0
 offset_right = 1980.0
 offset_bottom = 81.0
 
+[node name="CPUDecisionLabel" type="Label" parent="."]
+offset_left = 1933.0
+offset_top = 580.0
+offset_right = 2011.0
+offset_bottom = 603.0
+
 [node name="PotMoneyLabel" type="Label" parent="."]
 offset_left = 970.0
 offset_top = 197.0
@@ -261,6 +271,7 @@ text = "Buy in: 0"
 [connection signal="pressed" from="ButtonContainer/ButtonColumnContainer3/EvaluateCPUHandButton" to="." method="_on_evaluate_cpu_hand_button_pressed"]
 [connection signal="pressed" from="ButtonContainer/ButtonColumnContainer3/EvaluatePotentialHandButton" to="." method="_on_evaluate_potential_hand_button_pressed"]
 [connection signal="pressed" from="ButtonContainer/ButtonColumnContainer3/EvaluateWinnerButton" to="." method="_on_evaluate_winner_button_pressed"]
+[connection signal="pressed" from="ButtonContainer/ButtonColumnContainer3/EvaluateDecisionButton" to="." method="_on_evaluate_decision_button_pressed"]
 [connection signal="value_changed" from="PlayerRaiseSlider" to="." method="_on_player_raise_slider_value_changed"]
 [connection signal="pressed" from="ButtonColumnContainer1/RaiseButton" to="." method="_on_raise_button_pressed"]
 [connection signal="pressed" from="ButtonColumnContainer1/CheckButton" to="." method="_on_check_button_pressed"]

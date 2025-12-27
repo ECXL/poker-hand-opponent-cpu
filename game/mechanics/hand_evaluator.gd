@@ -159,17 +159,17 @@ func getHighestStraight(card_array: Array[Card], aceLow: bool):
 	# Sort cards by value (descending for ace-high, special handling for ace-low)
 	if aceLow:
 		# For ace-low: sort with aces as 1
-		unique_cards.sort_custom(func(a, b): return get_card_value(a, true) > get_card_value(b, true))
+		unique_cards.sort_custom(func(a, b): return getCardValue(a, true) > getCardValue(b, true))
 	else:
 		# For ace-high: sort normally
-		unique_cards.sort_custom(func(a, b): return get_card_value(a, false) > get_card_value(b, false))
+		unique_cards.sort_custom(func(a, b): return getCardValue(a, false) > getCardValue(b, false))
 	
 	# Check for straights
 	for i in range(len(unique_cards) - 4):
 		var straight: Array[Card] = []
 		straight.assign(unique_cards.slice(i, i+5))
-		var top_val = get_card_value(straight[0], aceLow)
-		var bottom_val = get_card_value(straight[4], aceLow)
+		var top_val = getCardValue(straight[0], aceLow)
+		var bottom_val = getCardValue(straight[4], aceLow)
 		
 		if top_val - bottom_val == 4:
 			if top_val > highestRank:
@@ -187,7 +187,7 @@ func getFlushCards() -> Array[Card]:
 		suit_dict[card.card_info["suit"]].append(card)
 	for suit_cards in suit_dict.values():
 		if len(suit_cards) >= 5:
-			suit_cards.sort_custom(func(a, b): return get_card_value(a, false) > get_card_value(b, false))  # Descending sort
+			suit_cards.sort_custom(func(a, b): return getCardValue(a, false) > getCardValue(b, false))  # Descending sort
 			var result: Array[Card] = []
 			result.assign(suit_cards)
 			return result
@@ -252,7 +252,7 @@ func checkThreeOfAKind(rank_counts):
 	type = HandType.THREE_OF_A_KIND
 	
 	var potential_kickers = cards.filter(func(card): return card.card_info["value"] != three_of_a_kind_rank[0])
-	potential_kickers.sort_custom(func(a, b): return get_card_value(a) > get_card_value(b))
+	potential_kickers.sort_custom(func(a, b): return getCardValue(a) > getCardValue(b))
 	mainHand.append_array(potential_kickers.slice(0, 2))
 
 func checkTwoPair(rank_counts):
@@ -273,7 +273,7 @@ func checkTwoPair(rank_counts):
 		if card.card_info["value"] not in two_pair_ranks:
 			potential_kickers.append(card)
 			
-	potential_kickers.sort_custom(func(a, b): return get_card_value(a) > get_card_value(b))
+	potential_kickers.sort_custom(func(a, b): return getCardValue(a) > getCardValue(b))
 	
 	if potential_kickers:
 		mainHand.append(potential_kickers[0])
@@ -293,10 +293,10 @@ func checkPair(rank_counts):
 	mainHand.append_array(single_pair_cards)
 	type = HandType.PAIR
 	var potential_kickers = cards.filter(func(card): return card.card_info["value"] != pair_rank[0])
-	potential_kickers.sort_custom(func(a, b): return get_card_value(a) > get_card_value(b))
+	potential_kickers.sort_custom(func(a, b): return getCardValue(a) > getCardValue(b))
 	mainHand.append_array(potential_kickers.slice(0, 3))
 	
-func identifyPotentialHands(hand_cards: Array[Card]) -> void:
+func identifyPotentialHands(hand_cards: Array[Card]) -> int:
 	"""
 	Identifies potential hands that can be made and advantage due to cards in hand to weigh whether to stay in or not
 	"""
@@ -326,20 +326,22 @@ func identifyPotentialHands(hand_cards: Array[Card]) -> void:
 		
 	if type == HandType.STRAIGHT or type == HandType.FLUSH or type == HandType.STRAIGHT_FLUSH or type == HandType.ROYAL_FLUSH:
 		stay_in_potential += checkFlushStraightsPotential(hand_cards)
+		
+	return stay_in_potential
 			
 func checkHighCardPotential(hand_cards: Array[Card]) -> int:
 	"""
 	Identifies whether the High Card is in hand or not and adds weight
 	based on the difference between the in hand and actual highest.
 	"""
-	var stay_in_potential = -15 # TODO: use this difference and its ilk in calculation of how likely opponent is to stay or fold
+	var stay_in_potential = 0 # TODO: use this difference and its ilk in calculation of how likely opponent is to stay or fold
 	var check_difference: int
 	for card in hand_cards:
-		check_difference = get_card_value(card) - get_card_value(mainHand[0])
+		check_difference = getCardValue(card) - getCardValue(mainHand[0])
 		if check_difference > stay_in_potential:
 			stay_in_potential = check_difference
 		if check_difference == 0:
-			stay_in_potential = get_card_value(mainHand[0]) - 6 # if high card is in hand, stay in chance is based on value
+			stay_in_potential = getCardValue(mainHand[0]) # if high card is in hand, stay in chance is based on value
 			print("High Card is in hand")
 			break
 	
@@ -354,9 +356,9 @@ func checkPairPotential(hand_cards: Array[Card]) -> int:
 	var in_hand = false
 	var in_pocket = false
 	
-	var pair_value = get_card_value(mainHand[0])
+	var pair_value = getCardValue(mainHand[0])
 	for card in hand_cards: 
-		check_difference = get_card_value(card) - pair_value # to determine whether the pair is in hand or there is a potential higher pair.
+		check_difference = getCardValue(card) - pair_value # to determine whether the pair is in hand or there is a potential higher pair.
 		if check_difference == 0:
 			if in_hand:
 				in_pocket = true # if in_hand is already true then that means both values for pair are in pocket.
@@ -364,14 +366,14 @@ func checkPairPotential(hand_cards: Array[Card]) -> int:
 				in_hand = true # if check_difference is equal to zero then the pairing value must be in your hand.
 	
 	var highest_kicker = mainHand[2] # Highest kicker is the third as its the highest card that isn't the pair
-	var higher_potential: int = get_card_value(highest_kicker) - pair_value # Checks if kicker is higher and thus could mean a higher pair is in play
+	var higher_potential: int = getCardValue(highest_kicker) - pair_value # Checks if kicker is higher and thus could mean a higher pair is in play
 	
 	if higher_potential > 0:
 		if hand_cards.has(highest_kicker): # if it is possible to make a new Two Pair with a higher value than the OG pair
-			stay_in_potential += get_card_value(highest_kicker) / (MAX_CARD_POOL - cards.size() + 1) # chance to stay in lowers based on how many cards are left to reveal
+			stay_in_potential += getCardValue(highest_kicker) / (MAX_CARD_POOL - cards.size() + 1) # chance to stay in lowers based on how many cards are left to reveal
 			print("Potential higher pair in hand")
 		elif higher_potential < 0:
-			stay_in_potential -= get_card_value(highest_kicker) - pair_value # opponent could have potential higher pair, lower chance to stay
+			stay_in_potential -= getCardValue(highest_kicker) - pair_value # opponent could have potential higher pair, lower chance to stay
 			print("Higher pair could be in opponent's hand")
 	else:
 		stay_in_potential += pair_value # highest pair achieved
@@ -429,7 +431,7 @@ func checkTwoPairAndFullHousePotential(hand_cards: Array[Card]) -> int:
 		var highest_value = 0
 		var card_value: int
 		for card in hand_cards:
-			card_value = get_card_value(card, true)
+			card_value = getCardValue(card, true)
 			if card_value > highest_value:
 				highest_value = card_value
 		stay_in_potential = highest_value
@@ -472,9 +474,9 @@ func checkPotentialStraights(hand_cards: Array[Card]) -> int:
 	var straight_potential = false
 	
 	for card in cards:
-		card_values.append(get_card_value(card, false))
+		card_values.append(getCardValue(card, false))
 		if card.card_info["value"] == 'A': # ace needs to be added as both high and low
-			card_values.append(get_card_value(card, true))
+			card_values.append(getCardValue(card, true))
 
 	var potential_straight_values = 0
 	for card_value in card_values:
@@ -529,12 +531,12 @@ func checkPotentialStraightFlushes(hand_cards: Array[Card]) -> int:
 	
 	for card in cards:
 		tuple = []
-		tuple.append(get_card_value(card, false))
+		tuple.append(getCardValue(card, false))
 		tuple.append(card.card_info["suit"])
 		card_tuples.append(tuple)
 		if card.card_info["value"] == 'A':
 			tuple = []
-			tuple.append(get_card_value(card, true)) # need to check for both an ace high and low
+			tuple.append(getCardValue(card, true)) # need to check for both an ace high and low
 			tuple.append(card.card_info["suit"])
 			card_tuples.append(tuple)
 	
@@ -597,7 +599,7 @@ func arrays_have_same_items(arr1, arr2):
 			return false
 	return true
 	
-func get_card_value(card: Card, aceLow: bool = false) -> int:
+func getCardValue(card: Card, aceLow: bool = false) -> int:
 	"""Returns the numerical value of the card, keeping Ace being high or low into account"""
 	var rank = card.card_info["value"]
 	var rank_values = {
@@ -624,7 +626,7 @@ func __eq__(hand_evaluator: Object) -> bool:
 		return false
 	var otherHand = hand_evaluator.getMainHand()
 	for i in range(5):
-		if get_card_value(mainHand[i], false) != get_card_value(otherHand[i], false):
+		if getCardValue(mainHand[i], false) != getCardValue(otherHand[i], false):
 			return false
 	return true
 
@@ -638,6 +640,6 @@ func __gt__(hand_evaluator: Object) -> bool:
 		
 	var otherHand = hand_evaluator.getMainHand()
 	for i in range(5):
-		if get_card_value(mainHand[i], false) > get_card_value(otherHand[i], false):
+		if getCardValue(mainHand[i], false) > getCardValue(otherHand[i], false):
 			return true
 	return false

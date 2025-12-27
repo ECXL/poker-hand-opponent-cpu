@@ -15,10 +15,12 @@ extends Node
 @onready var player_raise_slider = $PlayerRaiseSlider
 @onready var player_raise_label = $PlayerRaiseLabel
 @onready var check_money_label = $CheckMoneyLabel
+@onready var cpu_decision_label = $CPUDecisionLabel
 
 var player_hand_evaluator: HandEvaluator = null
-var cpu_hand_evaluator: HandEvaluator = null
+var cpu_hand_evaluator: PokerPlayer = null
 var board_revealed: int = 0
+var street: String = "preflop"
 
 var player_money: int = 1000
 var cpu_money: int = 100
@@ -88,14 +90,17 @@ func _on_flop_button_pressed() -> void:
 		board._held_cards[current_flip_number].show_front = true
 		current_flip_number -=1
 	board_revealed = 3
+	street = "flop"
 
 func _on_turn_button_pressed() -> void:
 	board._held_cards[3].show_front = true
 	board_revealed = 4
+	street = "turn"
 
 func _on_river_button_pressed() -> void:
 	board._held_cards[4].show_front = true
 	board_revealed = 5
+	street = "river"
 	
 func _on_reveal_all_button_pressed() -> void:
 	var current_flip_number = 4
@@ -107,14 +112,16 @@ func _on_reveal_all_button_pressed() -> void:
 func _on_evaluate_hand_button_pressed() -> void:
 	var combination_hand: Array[Card] = []
 	combination_hand.append_array(hand._held_cards)
-	combination_hand.append_array(board._held_cards)
+	var shown_cards: Array[Card] = board._held_cards.slice(0, board_revealed)
+	combination_hand.append_array(shown_cards)
 	
 	evaluate_hand(combination_hand, player_hand_evaluator)
 	
 func _on_evaluate_cpu_hand_button_pressed() -> void:
 	var combination_hand: Array[Card] = []
 	combination_hand.append_array(cpu_hand._held_cards)
-	combination_hand.append_array(board._held_cards)
+	var shown_cards: Array[Card] = board._held_cards.slice(0, board_revealed)
+	combination_hand.append_array(shown_cards)
 	
 	evaluate_hand(combination_hand, cpu_hand_evaluator)
 		
@@ -147,7 +154,7 @@ func evaluate_potential_hand(combination_hand: Array[Card], hand_evaluator: Hand
 	var hand_type = hand_evaluator.getType()
 	hand_outcome_label.text = "Hand Type: " + str(get_hand_type_name(hand_type))
 	
-	hand_evaluator.identifyPotentialHands(hand._held_cards)
+	hand_evaluator.identifyPotentialHands(cpu_hand._held_cards)
 		
 func get_hand_type_name(hand_type: HandEvaluator.HandType) -> String:
 	match hand_type:
@@ -195,14 +202,28 @@ func _on_evaluate_winner_button_pressed() -> void:
 		winner_outcome_label.text = "Player Wins!"
 	else:
 		winner_outcome_label.text = "CPU Wins!"
+		
+func _on_evaluate_decision_button_pressed() -> void:
+	var cpu_combination_hand: Array[Card] = []
+	cpu_combination_hand.append_array(cpu_hand._held_cards)
+	cpu_combination_hand.append_array(board._held_cards)
+			
+	cpu_hand_evaluator = PokerPlayer.new()
+	cpu_hand_evaluator._ready(cpu_combination_hand) # initialises HandEvaluator with the available cards
+	cpu_hand_evaluator.identifyHand()
+	
+	cpu_hand_evaluator.setStreet(street)
+	cpu_hand_evaluator.setMoneyParams(cpu_money, check_money, pot_money)
+	
+	var decision = cpu_hand_evaluator.checkStayInPotential(cpu_hand._held_cards)
+	cpu_decision_label.text = "Decision: " + str(decision)
+
 
 func _on_reset_deck_button_pressed():
 	_reset_deck()
 
-
 func _on_undo_button_pressed():
 	card_manager.undo()
-
 
 func _on_shuffle_hand_button_pressed():
 	hand.shuffle()
@@ -213,6 +234,7 @@ func _on_clear_all_button_pressed():
 	board.clear_cards()
 	cpu_hand.clear_cards()
 	board_revealed = 0
+	street = "preflop"
 	
 func update_money_labels():
 	player_money_label.text = str(player_money)
